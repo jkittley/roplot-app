@@ -16,8 +16,9 @@
             <a class="navbar-brand" data-page="home" href="#">
                 <img src="img/logo.svg" height="40" class="d-inline-block align-top" alt="Roplot">
             </a>
-            <form class="form-inline my-2 my-lg-0 ml-auto">
-                <button id="btn-connect" data-page="connect" class="btn my-2 my-sm-0" type="button"><i class="fab fa-bluetooth"></i><span> Connect</span></button>
+            <form class="form-inline">
+                <button id="btn-home" data-page="home" class="btn btn-outline-secondary" type="button"><i class="fas fa-home"></i></button> &nbsp; 
+                <button id="btn-connect" data-page="connect" class="btn" type="button"><i class="fab fa-bluetooth"></i><span> Connect</span></button>
             </form>
             
         </nav>
@@ -26,19 +27,45 @@
         <div id="page-home" class="page container mt-2">
             <h2>Welcome</h2>
             <p>This app is designed to be used with a Roplot drawing machine.</p>
-
-            <button data-page="print-picture" class="btn btn-primary btn-block"><i class="fas fa-camera-retro"></i> Print A Picture</button>
-            <button data-page="manual" class="btn btn-primary btn-block"><i class="fas fa-gamepad"></i> Manual Controls</button>
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Print a picture</h5>
+                            <p class="card-text">Take a picture with your camera or import from you library.</p>
+                            <button data-page="print-picture" class="btn btn-primary btn-block"><i class="fas fa-camera-retro"></i> Print A Picture</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Manual Control</h5>
+                            <p class="card-text">Rotate the boom and move the pen manually.</p>
+                            <button data-page="manual" class="btn btn-primary btn-block"><i class="fas fa-gamepad"></i> Manual Controls</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Connect Page -->
-        <div id="page-connect" class="page container mt-2 d-none">
-                <h2>Connect To Printer</h2>
-                <ul>
-                    <li>Printers</li>
-                </ul>
-                <button class="btn btn-primary btn-block">Refresh</button>
+        <div id="page-connect" class="page container mt-2 d-none">            
+            <div class="card mb-2">
+                <div class="card-body pb-0">
+                    <h3 class="card-title">Printers Nearby <button class="btn btn-outline-primary float-right"><i class="fas fa-sync"></i></button></h3>
+                </div>
+                <ul class="list-group list-group-flush mt-2">
+                        <li class="list-group-item">Cras justo odio</li>
+                        <li class="list-group-item">Dapibus ac facilisis in</li>
+                        <li class="list-group-item">Morbi leo risus</li>
+                        <li class="list-group-item">Porta ac consectetur ac</li>
+                        <li class="list-group-item">Vestibulum at eros</li>
+                    </ul> 
             </div>
+
+            
+        </div>
    
         <!-- Photo Print -->
         <div id="page-print-picture" class="page container justify-content-center d-none">
@@ -66,19 +93,11 @@
 
         <!-- Manual Control -->
         <div id="page-manual" class="page container justify-content-center d-none">
-            <h2>Manual Controls</h2>
-            <hr>
+          
             <div class="alert alert-warning no-connection-msg">
                 No connection
             </div>
-            <div class="row mt-4">
-                <div class="col-6">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-pencil-alt"></i> Up</button>
-                </div>
-                <div class="col-6">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-pencil-alt"></i> Down</button>
-                </div>
-            </div>
+          
             
             <div class="row justify-content-center mt-4">
                 <div class="col-3">
@@ -87,10 +106,26 @@
             </div>
             <div class="row justify-content-center mt-2">
                 <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg">
+                        <span class="fa-layers fa-fw">
+                            <i class="fas fa-play" data-fa-transform="rotate--90 grow-4"></i>
+                            <i class="fa-inverse fas fa-pencil-alt" data-fa-transform="shrink-4" style="color:white"></i>
+                        </span>
+                    </button>
+                </div>  
+                <div class="col-3">
                     <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-undo"></i></button>
                 </div>
                 <div class="col-3">
                     <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-redo"></i></button>
+                </div>
+                <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg">
+                        <span class="fa-layers fa-fw">
+                            <i class="fas fa-play" data-fa-transform="rotate-90 grow-4"></i>
+                            <i class="fa-inverse fas fa-pencil-alt" data-fa-transform="shrink-4 up-2 right-2" style="color:white"></i>
+                        </span>
+                    </button>
                 </div>
             </div>
             <div class="row justify-content-center mt-2">

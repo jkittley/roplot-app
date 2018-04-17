@@ -19,7 +19,7 @@
 
 var app = {
 
-    printerConnected: false,
+    printerConnected: true,
 
     // Application Constructor
     initialize: function() {
@@ -76,7 +76,6 @@ var app = {
         var target = $(e.target); 
         if (!target.attr('data-page')) target = target.closest('[data-page]');
         var pgname = '#page-' + target.data('page');
-        console.log(target);
         $('.page').addClass('d-none');
         $(pgname).removeClass('d-none');
     },
