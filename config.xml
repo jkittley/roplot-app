@@ -4,7 +4,7 @@
     <description>
         Roplot drawing machine controller.
     </description>
-    <author email="jacob@kittley.com" href="http://cordova.io">
+    <author email="jacob@kittley.com" href="http://kittley.com">
         Jacob Kittley-Davies
     </author>
     <content src="index.html" />
@@ -63,6 +63,11 @@
         <splash height="1334" src="res/screen/ios/Default-667h.png" width="750" />
         <splash height="2208" src="res/screen/ios/Default-736h.png" width="1242" />
         <splash height="1242" src="res/screen/ios/Default-Landscape-736h.png" width="2208" />
+    </platform>
+    <platform name="browser">
+        <preference name="SplashScreenDelay" value="0" />
+        <preference name="ShowSplashScreen" value="false" />
+        
     </platform>
     <plugin name="cordova-plugin-browsersync" spec="^1.1.0" />
     <plugin name="cordova-plugin-camera" spec="^4.0.3" />
