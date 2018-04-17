@@ -18,6 +18,9 @@
  */
 
 var app = {
+
+    printerConnected: false,
+
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -69,6 +72,7 @@ var app = {
     },
 
     go: function(e) {   
+        app.checkPrinterConnection();
         var target = $(e.target); 
         if (!target.attr('data-page')) target = target.closest('[data-page]');
         var pgname = '#page-' + target.data('page');
@@ -78,16 +82,17 @@ var app = {
     },
 
     checkPrinterConnection: function() {
-        var connected = false;
-        if (connected) {
+        if (app.printerConnected) {
             $('.needs-connection').prop('disabled', false);
             $('.no-connection-msg').addClass('d-none');
+            $('#btn-connect span').html(" Manage");
             $('#btn-connect').removeClass('btn-outline-danger');
             $('#btn-connect').removeClass('pulse-border');
             $('#btn-connect').addClass('btn-outline-success');
         } else {
             $('.needs-connection').prop('disabled', true);
             $('.no-connection-msg').removeClass('d-none');
+            $('#btn-connect span').html(" Connect");
             $('#btn-connect').removeClass('btn-outline-success');
             $('#btn-connect').addClass('pulse-border');
             $('#btn-connect').addClass('btn-outline-danger');
