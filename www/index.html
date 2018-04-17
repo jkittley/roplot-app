@@ -1,36 +1,50 @@
 <!DOCTYPE html>
 <html>
     <head>
-       
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src * blob:">
-
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        
         <title>Roplot</title>
-
     </head>
     <body>
+
+        <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" style="background-color: #e3f2fd;">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" data-page="home" href="#">
                 <img src="img/logo.svg" height="40" class="d-inline-block align-top" alt="Roplot">
             </a>
+            <form class="form-inline my-2 my-lg-0">
+                <button id="btn-connect" data-page="connect" class="btn my-2 my-sm-0" type="button"><i class="fab fa-bluetooth"></i></button>
+            </form>
+            
         </nav>
-                
+        
+        <!-- Home Page -->
         <div id="page-home" class="page container mt-2">
-        <h2>Welcome</h2>
-        <p>This app is designed to be used with a Roplot drawing machine.</p>
+            <h2>Welcome</h2>
+            <p>This app is designed to be used with a Roplot drawing machine.</p>
 
-        <button data-page="print-picture" class="btn btn-primary btn-block">Print A Picture</button>
-
+            <button data-page="print-picture" class="btn btn-primary btn-block">Print A Picture</button>
+            <button data-page="manual" class="btn btn-primary btn-block">Manual Controls</button>
         </div>
-   
 
+        <!-- Connect Page -->
+        <div id="page-connect" class="page container mt-2 d-none">
+                <h2>Connect To Printer</h2>
+                <ul>
+                    <li>Printers</li>
+                </ul>
+                <button class="btn btn-primary btn-block">Refresh</button>
+            </div>
+   
+        <!-- Photo Print -->
         <div id="page-print-picture" class="page container justify-content-center d-none">
+            <div class="alert alert-warning no-connection-msg">
+                No connection
+            </div>
             <div class="card">
                 <img id="cameraPreview" class="card-img-top d-none" />
                 <div id="svgPreview" class="card-img-top d-none"></div>
@@ -41,24 +55,62 @@
                 <div class="card-footer">
                     <button class="btn btn-primary btn-block " id="snap">Take A Picture</button>
                     <button class="btn btn-primary btn-block" id="album">Open From Album</button>
+                    
+                     
+                    <button class="needs-connection btn btn-success btn-block">Send To Printer</button>
+
+                
                 </div>  
             </div>
         </div>
 
-     
+        <!-- Manual Control -->
+        <div id="page-manual" class="page container justify-content-center d-none">
+            <h2>Manual Controls</h2>
+            <hr>
+            <div class="alert alert-warning no-connection-msg">
+                No connection
+            </div>
+            <div class="row mt-4">
+                <div class="col-6">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-pencil-alt"></i> Up</button>
+                </div>
+                <div class="col-6">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-pencil-alt"></i> Down</button>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center mt-4">
+                <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-arrow-up"></i></button>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-2">
+                <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-undo"></i></button>
+                </div>
+                <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-2">
+                <div class="col-3">
+                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-arrow-down"></i></button>
+                </div>
+            </div>
+        </div>
 
-     
-
-        
-
-        <div id="svgPreview" width=200 height=200 style="overflow: scroll"></div>
-
+        <!-- Scripts -->
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/fontawesome-all.min.js" defer></script>
+
         <script type="text/javascript" src="js/imagetracer_v1.2.3.js"></script>
         <script type="text/javascript" src="js/roplot.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+
+
         
     </body>
 </html>

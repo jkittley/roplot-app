@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -23,29 +24,14 @@ var app = {
         snap.addEventListener('click', this.takePicture.bind(this), false);
         album.addEventListener('click', this.openPicture.bind(this), false);
         $('button[data-page]').click(this.go);
+        $('a[data-page]').click(this.go);
     },
 
     // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
-        
-        
-
-        
-
-        // var device_config = {
-        //     "rotationSpeed": 10,
-        //     "beltSpeed": 10,
-        //     "physicalRadius": 1200,
-        //     "physicalDrawStart": 200,
-        //     "physicalDrawEnd": 1000
-        // }
-
-        // roplot.init("vis", device_config);
-
+        this.checkPrinterConnection();
     },
 
     // Update DOM on a Received Event
@@ -82,10 +68,31 @@ var app = {
         });
     },
 
-    go: function(x) {   
-        var pgname = '#page-' + $(x.target).data('page');
+    go: function(e) {   
+        var target = $(e.target); 
+        if (!target.attr('data-page')) target = target.closest('[data-page]');
+        var pgname = '#page-' + target.data('page');
+        console.log(target);
         $('.page').addClass('d-none');
         $(pgname).removeClass('d-none');
+    },
+
+    checkPrinterConnection: function() {
+        var connected = false;
+        if (connected) {
+            $('.needs-connection').prop('disabled', false);
+            $('.no-connection-msg').addClass('d-none');
+            $('#btn-connect').removeClass('btn-outline-danger');
+            $('#btn-connect').removeClass('pulse-border');
+            $('#btn-connect').addClass('btn-outline-success');
+        } else {
+            $('.needs-connection').prop('disabled', true);
+            $('.no-connection-msg').removeClass('d-none');
+            $('#btn-connect').removeClass('btn-outline-success');
+            $('#btn-connect').addClass('pulse-border');
+            $('#btn-connect').addClass('btn-outline-danger');
+        }
+        
     }
 };
 

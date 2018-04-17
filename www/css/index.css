@@ -16,3 +16,13 @@ body {
 .svgPreview {
     width: 100%;
 }
+
+@keyframes border-pulsate {
+    0%   { background-color: rgba(255,20,0,0.2); }
+    50%  { background-color:  rgba(255,20,0,0);}
+    100% { background-color:  rgba(255,20,0,0.2);}
+}
+
+.pulse-border {
+    animation: border-pulsate 2s infinite;
+}
