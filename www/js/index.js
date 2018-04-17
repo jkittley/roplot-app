@@ -20,6 +20,9 @@ var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        snap.addEventListener('click', this.takePicture.bind(this), false);
+        album.addEventListener('click', this.openPicture.bind(this), false);
+        $('button[data-page]').click(this.go);
     },
 
     // deviceready Event Handler
@@ -28,16 +31,20 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
+        
+        
 
-        var device_config = {
-            "rotationSpeed": 10,
-            "beltSpeed": 10,
-            "physicalRadius": 1200,
-            "physicalDrawStart": 200,
-            "physicalDrawEnd": 1000
-        }
+        
 
-        roplot.init("vis", device_config);
+        // var device_config = {
+        //     "rotationSpeed": 10,
+        //     "beltSpeed": 10,
+        //     "physicalRadius": 1200,
+        //     "physicalDrawStart": 200,
+        //     "physicalDrawEnd": 1000
+        // }
+
+        // roplot.init("vis", device_config);
 
     },
 
@@ -45,9 +52,41 @@ var app = {
     receivedEvent: function(id) {
         
         console.log('Received Event: ' + id);
-    }
+    },
 
+    cameraSuccess: function(imageData) {
+        var base64data = "data:image/jpeg;base64," + imageData;
+        $('#cameraPreview').css('backgroud-image', 'url('+ base64data+')').removeClass('d-none');
+        //https://github.com/jankovicsandras/imagetracerjs
+        ImageTracer.imageToSVG(base64data, function(svgstr) {
+            console.log(svgstr);
+            $('#svgPreview').removeClass('d-none').append(svgstr);
+        });
+    },
+
+    cameraError: function(x) {
+        console.log('cameraError');
+        console.log(x);
+    },
     
+    takePicture: function(x) {
+        navigator.camera.getPicture(app.cameraSuccess, app.cameraError, {
+            quality: 70,
+        });
+    },
+
+    openPicture: function(x) {   
+        navigator.camera.getPicture(app.cameraSuccess, app.cameraError, {
+            quality: 70,
+            sourceType: Camera.PictureSourceType.SAVEDPHOTOALBUM,
+        });
+    },
+
+    go: function(x) {   
+        var pgname = '#page-' + $(x.target).data('page');
+        $('.page').addClass('d-none');
+        $(pgname).removeClass('d-none');
+    }
 };
 
 app.initialize();

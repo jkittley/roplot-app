@@ -1,69 +1,64 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+       
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src * blob:">
+
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        
+
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         
-        <script type="text/javascript" src="js/d3.min.js" charset="utf-8"></script>
-        <script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
-        
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        
-
         <title>Roplot</title>
 
     </head>
     <body>
-       
-        <div id="logo">
-            <a href="/"><img src="img/logo.svg" height="50"/></a>
-        </div>
-        
-        <div id="vis" class="text-center"></div>
-        
-        <div id="right_menu">
-            <div id="log" class="panel panel-primary">
-                <div class="panel-heading">Log</div>
-                <div class="panel-scroller">
-                    <ul></ul>
-                </div>
-            </div>
-
-            <div id="pen_list" class="panel panel-primary">
-                    <div class="panel-heading">Pens</div>
-                    <ul class="list-group"></ul>
-                </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" style="background-color: #e3f2fd;">
+            <a class="navbar-brand" href="#">
+                <img src="img/logo.svg" height="40" class="d-inline-block align-top" alt="Roplot">
+            </a>
+        </nav>
                 
-            <div id="job_list" class="panel panel-primary">
-              <div class="panel-heading">Jobs</div>
-              <div class="panel-body" style="padding-top:2px; padding-bottom:2px; ">
-                  <div class="row">
-                      <div class="col-md-4" style="padding:2px;"><button type="button" class="btn btn-sm btn-block btn-success consume-button consumeOne">Exec Next</button></div>
-                      <div class="col-md-4" style="padding:2px;"><button type="button" class="btn btn-sm btn-block btn-warning consume-button consumeAll">Exec All</button></div>
-                      <div class="col-md-4" style="padding:2px;"><button type="button" class="btn btn-sm btn-block btn-danger consumeStop" disabled>Stop</butto></div>
-                  </div>
-              </div>
-                <ul class="list-group"></ul>
-        
+        <div id="page-home" class="page container mt-2">
+        <h2>Welcome</h2>
+        <p>This app is designed to be used with a Roplot drawing machine.</p>
+
+        <button data-page="print-picture" class="btn btn-primary btn-block">Print A Picture</button>
+
+        </div>
+   
+
+        <div id="page-print-picture" class="page container justify-content-center d-none">
+            <div class="card">
+                <img id="cameraPreview" class="card-img-top d-none" />
+                <div id="svgPreview" class="card-img-top d-none"></div>
+                <div class="card-body">
+                    <h5 class="card-title">Draw a picture</h5>
+                    <p class="card-text">Take a picture and draw it.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary btn-block " id="snap">Take A Picture</button>
+                    <button class="btn btn-primary btn-block" id="album">Open From Album</button>
+                </div>  
             </div>
         </div>
+
+     
+
+     
+
+        
+
+        <div id="svgPreview" width=200 height=200 style="overflow: scroll"></div>
 
         <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/imagetracer_v1.2.3.js"></script>
         <script type="text/javascript" src="js/roplot.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        
     </body>
 </html>
