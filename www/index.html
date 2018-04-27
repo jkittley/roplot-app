@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <roplot-vis v-bind:printer="selectedPrinter"></roplot-vis>
+            <roplot-vis v-bind:config="printerConfig" v-bind:printer="selectedPrinter"></roplot-vis>
 
         </div>
 
@@ -85,7 +85,11 @@
 
         <!-- Printer list refresh button -->
         <script type="text/x-template" id="template-printer-vis">
-            <div id="vis" class="vis ml-auto mr-auto"></div>
+            <div>
+                <div v-show="!printer" class="alert alert-info">Waiting for printer...</div>
+                <div v-show="printer && !hasConfig" class="alert alert-success">Waiting for printer config...</div>
+                <div v-show="hasConfig" id="vis" class="vis ml-auto mr-auto"></div>
+            </div>
         </script>
 
         

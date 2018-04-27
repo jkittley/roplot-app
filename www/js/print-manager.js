@@ -47,8 +47,9 @@ class PrintManager {
         return false;
     }
 
-
     _processUpdates(updJson) {
+        console.log(JSON.stringify(updJson, undefined, 2));
+        // Create event
         this.emitEvent(updJson.type, updJson);
     }
     
@@ -147,6 +148,11 @@ var bluefruit = {
     rxCharacteristic: '6e400003-b5a3-f393-e0a9-e50e24dcca9e'  // receive is from the phone's perspective
 };
 
+
+
+
+
+
 class Printer {
 
     constructor(id, name, advertising, rssi, manager) {
@@ -158,7 +164,6 @@ class Printer {
         this.data = "";
         this.writeMethod = ble.write;
         this.printManager = manager;
-        this.config = null;
     }
 
     _determineWriteType(peripheral) {

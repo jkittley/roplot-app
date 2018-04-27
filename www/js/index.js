@@ -66,13 +66,20 @@ Vue.component('btn-refresh-printers', {
 
 // Connected button
 Vue.component('roplot-vis', {
-    props: ['printer'],
+    props: ['config', 'printer'],
     template: '#template-printer-vis',
     data: function() { return {
-        roplotter: null
+        roplotter: null,
+        hasConfig: false
     }},
-    mounted: function() {
-        if (this.printer) {
+    watch: {
+        config: function() {
+            this.hasConfig = (this.config!==null);
+            if (this.hasConfig) this.initPlot();
+        }
+    },
+    methods: {
+        initPlot() {
             var min = Math.min($('#vis').width(), $('#vis').height());
             $('#vis').height(min).width(min);;
             this.roplotter = $('#vis').roplot(this.printer.config).on('click', function(e, details) { console.log(details); });
@@ -87,24 +94,23 @@ var app = new Vue({
     created () {
         this.printerManager = new PrintManager();
         this.printerManager.addListener('printerConfig', function(eventData) {
-            console.log(JSON.stringify(eventData, undefined, 2));
-            this.printersConfig = eventData;
+            this.printerConfig = eventData;
         }.bind(this));
     },
     data: {
         printerManager: null,
         printers: [],
-        printersConfig: null,
+        printerConfig: null,
         visiblePrinterList: false,
     },
     computed: {
-        isScanningForPrinters: function() { return this.printerManager.isScanning; },
-        selectedPrinter: function() { return this.printerManager.getPrinter();  }
+        isScanningForPrinters() { return this.printerManager.isScanning; },
+        selectedPrinter() { return this.printerManager.getPrinter();  }
     },
     methods: {
-        showPrinterList() {
-            if (this.selectedPrinter===null) this.fetchPrinters();
-            this.visiblePrinterList = true;
+        showPrinterList(showState) {
+            if (showState && this.selectedPrinter===null) this.fetchPrinters();
+            this.visiblePrinterList = showState;
         },
         closePrinterList() {
             this.visiblePrinterList = false;
@@ -131,6 +137,7 @@ var app = new Vue({
                     printer,
                     function() { // Connect success
                         this.selectedPrinter = printer;
+                        this.showPrinterList(false);
                     }.bind(this), 
                     function() { // Connect failed
                         alert("Connection Error", "Connection to the printer failed.");
@@ -149,6 +156,7 @@ var app = new Vue({
             console.log("Disconnecting");
             this.printerManager.disconnectPrinter(function() {
                 this.selectedPrinter = null;
+                this.printerConfig = null;
                 this.fetchPrinters();
             }.bind(this));
         }
