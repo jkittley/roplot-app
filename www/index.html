@@ -1,165 +1,105 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src * blob:">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' 'unsafe-eval'; media-src * blob:">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="vis/roplot.css">
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <title>Roplot</title>
     </head>
     <body>
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" style="background-color: #e3f2fd;">
-            <a class="navbar-brand" data-page="home" href="#">
-                <img src="img/logo.svg" height="40" class="d-inline-block align-top" alt="Roplot">
-            </a>
-            <form class="form-inline ml-auto">
-                <button id="btn-home" data-page="home" class="btn btn-outline-secondary" type="button"><i class="fas fa-home"></i></button> &nbsp; 
-                <button id="btn-connect" data-page="printer" class="btn" type="button"><i class="fab fa-bluetooth"></i><span> Connect</span></button>
-            </form>
-            
-        </nav>
+        <div id="vueapp" class="container-fluid">
+
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" style="background-color: #e3f2fd;">
+                <a class="navbar-brand" data-page="home" href="#"><img src="img/logo.svg" height="40" class="d-inline-block align-top" alt="Roplot"></a>
+                <form class="form-inline ml-auto">
+                    <btn-is-connected v-bind:printer="selectedPrinter"></btn-is-connected>
+                </form>  
+            </nav>       
+
+            <div class="sidebar-printer" v-show="visiblePrinterList">
+                <div class="row mb-2">
+                    <div class="col text-right">
+                        <button class="btn btn-outline-secondary" v-on:click="closePrinterList">Close</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        Printers Nearby
+                        <div class="float-right"><btn-refresh-printers v-bind:is-scanning="isScanningForPrinters" v-show="selectedPrinter===null"></btn-refresh-printers></div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <printer-item v-for="printer in printers" v-bind:printer="printer" v-bind:key="printer.id"></printer-item>
+                    </ul>
+                    <div v-if="printers.length == 0 && !isScanningForPrinters" class="card-body">
+                        <p>No printers available.</p>
+                    </div>
+                    <div v-if="isScanningForPrinters" class="card-body">
+                        <p><icon name="spinner" pulse></icon> Looking for printers...</p>
+                    </div>
+                </div>
+            </div>
+
+            <roplot-vis v-bind:printer="selectedPrinter"></roplot-vis>
+
+        </div>
+
+        <!-- ******************************* TEMPLATES ******************************* -->
+
+        <!-- Printer list item -->
+        <script type="text/x-template" id="template-print-item">
+            <li class="list-group-item d-flex justify-content-between align-items-center" @click="toggleConnect" :class="{active:printer.isConnected}">
+                <span v-if="printer.isConnecting">
+                    <icon name="sync" spin></icon> Connecting to {{ printer.name }}...
+                </span>
+                <span v-else>
+                    <icon name="print"></icon> {{ printer.name }}
+                </span>
+                <span v-if="printer.isConnected">
+                    <button class="btn btn-xs btn-danger">Disconnect</button>
+                </span>
+            </li>
+        </script>
+
+        <!-- Printer connected button -->
+        <script type="text/x-template" id="template-btn-printer-connect">
+            <button type="button" :class="{ btn: true, 'btn-success': isConnected, 'btn-outline-danger': !isConnected, 'pulse-border':!isConnected }" v-on:click="showPrinterList">
+                <icon name="print"></icon> 
+                <span v-if="isConnected">Manage</span>
+                <span v-else>Connect</span>
+            </button>
+        </script>
         
-        <!-- Home Page -->
-        <div id="page-home" class="page container-fluid mt-2">
-            <h2>Welcome</h2>
-            <p>This app is designed to be used with a Roplot drawing machine.</p>
-            <div class="row">
-                <div class="col-sm-12 col-md-6">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h5 class="card-title">Print a picture</h5>
-                            <p class="card-text">Take a picture with your camera or import from you library.</p>
-                            <button data-page="print-picture" class="btn btn-primary btn-block"><i class="fas fa-camera-retro"></i> Print A Picture</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h5 class="card-title">Manual Control</h5>
-                            <p class="card-text">Rotate the boom and move the pen manually.</p>
-                            <button data-page="manual" class="btn btn-primary btn-block"><i class="fas fa-gamepad"></i> Manual Controls</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Printer list refresh button -->
+        <script type="text/x-template" id="template-btn-printer-refresh">
+            <button type="button" :class="{ btn: true, 'btn-info': !isScanning, 'btn-outline-secondary': isScanning }" v-on:click="refresh">
+                <icon v-if="isScanning" name="sync" spin></icon>
+                <icon v-else name="sync"></icon>
+            </button>
+        </script>
 
-        <!-- Connect Page -->
-        <div id="page-printer" class="page container-fluid mt-2 d-none">    
-            
-            <div id="printerPageScan">
-                    <div class="card mb-2">
-                        <div class="card-body pb-0">
-                            <h3 class="card-title">Printers Nearby 
-                                <button id="buttonRefreshPrinterList" class="btn btn-outline-primary float-right"><i class="fas fa-sync"></i></button>
-                                <button id="spinnerRefreshPrinterList" class="btn btn-outline-secondary float-right"><i class="fas fa-sync fa-spin"></i></button>
-                            </h3>
-                        </div>
-                        <ul id="printerList" class="list-group list-group-flush mt-2">
-                                <li class="list-group-item">Loading...</li>
-                        </ul> 
-                    </div>
-            </div>
-            
-            <div id="printerPageManage">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <pre id="printerConfig">
-                                Loading...
-                            </pre>
-                            <button id="printerRequestConfig" class="btn btn-primary btn-block">Request Config</button>
-                            <button id="printerControlDisconnect" class="btn btn-danger btn-block">Disconnect</button>
-                        </div>
-                    </div>
-            </div>
-            
-        </div>
+        <!-- Printer list refresh button -->
+        <script type="text/x-template" id="template-printer-vis">
+            <div id="vis" class="vis ml-auto mr-auto"></div>
+        </script>
 
         
-   
-        <!-- Photo Print -->
-        <div id="page-print-picture" class="page container-fluid justify-content-center d-none">
-            <div class="alert alert-warning no-connection-msg">
-                No connection
-            </div>
-            <div class="card">
-                <img id="cameraPreview" class="card-img-top d-none" />
-                <div id="svgPreview" class="card-img-top d-none"></div>
-                <div class="card-body">
-                    <h5 class="card-title">Draw a picture</h5>
-                    <p class="card-text">Take a picture and draw it.</p>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-primary btn-block " id="snap">Take A Picture</button>
-                    <button class="btn btn-primary btn-block" id="album">Open From Album</button>
-                    
-                     
-                    <button class="needs-connection btn btn-success btn-block">Send To Printer</button>
+        <!-- ******************************* Scripts ******************************* -->
 
-                
-                </div>  
-            </div>
-        </div>
-
-        <!-- Manual Control -->
-        <div id="page-manual" class="page container-fluid justify-content-center d-none">
-          
-            <div class="alert alert-warning no-connection-msg">
-                No connection
-            </div>
-          
-            <div class="row justify-content-center mt-4">
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-arrow-up"></i></button>
-                </div>
-            </div>
-            <div class="row justify-content-center mt-2">
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg">
-                        <span class="fa-layers fa-fw">
-                            <i class="fas fa-play" data-fa-transform="rotate--90 grow-4"></i>
-                            <i class="fa-inverse fas fa-pencil-alt" data-fa-transform="shrink-4" style="color:white"></i>
-                        </span>
-                    </button>
-                </div>  
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-undo"></i></button>
-                </div>
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-redo"></i></button>
-                </div>
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg">
-                        <span class="fa-layers fa-fw">
-                            <i class="fas fa-play" data-fa-transform="rotate-90 grow-4"></i>
-                            <i class="fa-inverse fas fa-pencil-alt" data-fa-transform="shrink-4 up-2 right-2" style="color:white"></i>
-                        </span>
-                    </button>
-                </div>
-            </div>
-            <div class="row justify-content-center mt-2">
-                <div class="col-3">
-                    <button class="needs-connection btn btn-outline-primary btn-block btn-lg"><i class="fas fa-arrow-down"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scripts -->
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/fontawesome-all.min.js" defer></script>
+        <script type="text/javascript" src="js/d3.min.js"></script>
+        <script type="text/javascript" src="js/vue.js"></script>
+        <script type="text/javascript" src="js/vue-awesome.js"></script>
 
-        <script type="text/javascript" src="js/imagetracer_v1.2.3.js"></script>
         <script type="text/javascript" src="js/print-manager.js"></script>
+        <script type="text/javascript" src="vis/roplot.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
-
-        
     </body>
 </html>

@@ -4,6 +4,7 @@ class PrintManager {
         this._printer = null;
         this._bleAvailable = false;
         this._scanTimeout = null;
+        this.isScanning = false;
         this.listeners = new Map();
     }
 
@@ -52,15 +53,19 @@ class PrintManager {
     }
     
     isRadioEnabled(cb=null) {
-        ble.isEnabled(
-        function() {
-            this._bleAvailable = true;
-            if (cb!==null) cb(true);
-        }.bind(this), 
-        function() {
-            this._bleAvailable = false;
+        try {
+            ble.isEnabled(
+            function() {
+                this._bleAvailable = true;
+                if (cb!==null) cb(true);
+            }.bind(this), 
+            function() {
+                this._bleAvailable = false;
+                if (cb!==null) cb(false);
+            }.bind(this));
+        } catch (e) {
             if (cb!==null) cb(false);
-        }.bind(this));
+        }
     }
 
     printerConnected() {
@@ -83,27 +88,34 @@ class PrintManager {
     }
 
     startScan(cbEachDeviceFound, cbError, cdComplete, scanFor) {
+        this.isScanning = true;
         ble.startScan([], function(device) { 
             console.log(JSON.stringify(device));
             var p = new Printer(device.id, device.name, device.advertising, device.rssi, this)
             if (cbEachDeviceFound !== null) cbEachDeviceFound(p);
         }.bind(this), function() { 
+            this.isScanning = false;
             if (cbError !== null) cbError("Scan failed to start");
             if (cdComplete !== null) cdComplete();
         }.bind(this));
+
+        // Stop after timeout
         this._scanTimeout = setTimeout(ble.stopScan,
             scanFor,
             function() {
+                this.isScanning = false;
                 if (cdComplete !== null) cdComplete();
-            },
+            }.bind(this),
             function() { 
+                this.isScanning = false;
                 if (cbError !== null) cbError("Failed to terminate scan");
-            }
+            }.bind(this)
         );
     }
 
     connectTo(printer, cbConnect=null, cbDisconnect=null) {
         if (this._scanTimeout !== null) clearTimeout(this._scanTimeout);
+        this.isScanning = false;
         ble.stopScan();
         printer.connect(
             function() { 
@@ -142,9 +154,11 @@ class Printer {
         this.name = (name === undefined || name === null) ? "No name" : name;
         this.rssi = rssi;
         this.isConnected = false;
+        this.isConnecting = false;
         this.data = "";
         this.writeMethod = ble.write;
         this.printManager = manager;
+        this.config = null;
     }
 
     _determineWriteType(peripheral) {
@@ -158,12 +172,19 @@ class Printer {
 
     connect(cbConnect=null, cbDisconnect=null) {
         this.isConnected = false;
+        this.isConnecting = true;
         var onConnect = function(peripheral) {
+            this.isConnecting = false;
             try {
                 this._determineWriteType(peripheral);
                 ble.startNotification(this.id, bluefruit.serviceUUID, bluefruit.rxCharacteristic, this._onData.bind(this), this._onConnectionError.bind(this));
                 this.isConnected = true;
-                if (cbConnect!==null) cbConnect();
+
+                // Get the config details
+                this.requestConfig(function() { 
+                    if (cbConnect!==null) cbConnect();
+                }.bind(this));
+
             } catch (error) {
                 console.log(error);
                 this._onConnectionError("Failed to connect.");
@@ -172,9 +193,10 @@ class Printer {
         }.bind(this);
         var onDisconnect = function() {
             this._onConnectionError("Lost connection to device.");
+            this.isConnected = false;
+            this.isConnecting = false;
             if (cbDisconnect!==null) cbDisconnect();
         }.bind(this)
-
         ble.connect(this.id, onConnect, onDisconnect);
     }
 
@@ -218,6 +240,7 @@ class Printer {
     // Request the printer configuration
     requestConfig(cb=null) {
         this.sendCommand("getconfig");
+        if (cb!==null) cb();
     }
 
     sendCommand(command, cb=null) {

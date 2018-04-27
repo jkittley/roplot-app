@@ -2,6 +2,29 @@ body {
     padding: 0;
     margin: 0;
 }
+#vis {
+    height: calc(100vh - 100px);
+    width: 100vw;
+}
+.btn .fa-icon {
+    margin-top: 5px;
+}
+
+.sidebar-printer {
+    position: absolute;
+    right:0;
+    top:0;
+    bottom: 0;
+    min-width: 350px;
+    padding: 10px;
+    background-color: black;
+}
+
+@media only screen and (max-width: 500px) {
+    .sidebar-printer {
+        left: 0;
+    }
+}
 
 .cordova-camera-capture {
     position: absolute;
